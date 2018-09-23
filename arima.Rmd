@@ -1,0 +1,40 @@
+#The classic Box & Jenkins airline data. Monthly totals of international airline passengers from 1949 to 1960.
+View(AirPassengers)
+plot(AirPassengers)
+#trend
+plot(aggregate(AirPassengers,FUN=mean))
+#seasonal
+cycle(AirPassengers)
+boxplot(AirPassengers~cycle(AirPassengers))
+#forcasting can be done on stationary data
+# equal variance
+plot(log(AirPassengers))
+#equal mean
+plot(diff(log(AirPassengers)))
+#auto corelation graph
+acf(diff(log(AirPassengers)))
+#q value is 1
+# autoregression 
+pacf(diff(log(AirPassengers)))
+# p value is 0
+#diff=1
+#prediction model
+fit=arima(log(AirPassengers),c(0,1,1),seasonal=list(order=c(0,1,1),period=12))
+pred=predict(fit,n.ahead=15*12)
+#convert value from log to decimal use e value 
+pred1=2.718^pred$pred
+ts.plot(AirPassengers,pred1,log="y",lty=c(1,3))
+#testing model
+# consider data from 1949 to 1959
+data=ts(AirPassengers,frequency=12,start=c(1949,1),end=c(1959,12))
+#predict
+fit=arima(log(data),c(0,1,1),seasonal=list(order=c(0,1,1),period=12))
+pred=predict(fit,n.ahead=10*12)
+pred1=2.718^pred$pred
+#predicted 1960 values
+data1=head(pred1,12)
+#rounded value
+predicted_1960=round(data1,digits=0)
+# rounded origina value
+original_1960=tail(AirPassengers,12)
+#predicted_1960-original_1960
